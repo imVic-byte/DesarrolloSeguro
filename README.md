@@ -131,7 +131,8 @@ cd pnkSecurityWeb
 3. Cree la base de datos `pnk_security`:
 
 ```sql
-CREATE DATABASE pnk_security CHARACTER SET utf8 COLLATE utf8_spanish_ci;
+
+sudo mysql -e "CREATE DATABASE IF NOT EXISTS pnk_security; ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''; FLUSH PRIVILEGES;"
 ```
 
 4. Importe el archivo de esquema y datos disponible en [Script_BD/pnk_security.sql](file:///mnt/c/Users/drixt/DesarrolloSeguro/pnkSecurityWeb/Script_BD/pnk_security.sql):
