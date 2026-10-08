@@ -61,23 +61,74 @@ direcciones.id WHERE restautantes.id = ".$key." AND restautantes.eliminado IS NU
     {
     ?>
       <form class="form-inline" role="search" action="setup/procesalogin.php" method="post">
-        <div class="form-group">
+        <div class="form-group mr-2">
           <div class="input-group-prepend">
             <span class="input-group-text" id="basic-addon1">@</span>
           </div>
-            <input type="text" class="form-control" name="frmusuario" placeholder="Usuario">
+            <input type="email" class="form-control" name="frmusuario" placeholder="Correo" required>
         </div>
-        <div class="form-group">
-            <input type="password" class="form-control" name="frmpassword" placeholder="Contraseña">
+        <div class="form-group mr-2">
+            <input type="password" class="form-control" name="frmpassword" placeholder="Contraseña" required>
         </div>
-        <button type="submit" class="btn btn-outline-primary my-2 my-sm-0">Ingresar</button>
+        <button type="submit" class="btn btn-outline-primary my-2 my-sm-0 mr-2">Ingresar</button>
+        <button type="button" class="btn btn-outline-success my-2 my-sm-0" data-toggle="modal" data-target="#modalRegistro">Registrarse</button>
       </form>
     <?php
     }else{
-      echo "Bienvenido :".$_SESSION['nombre']." - <a href=setup/cerrar_sesion.php>Cerra Sesión</a>";
+      echo "Bienvenido :".htmlspecialchars($_SESSION['nombre'], ENT_QUOTES, 'UTF-8')." - <a href=setup/cerrar_sesion.php>Cerrar Sesión</a>";
     }
   ?>
 </nav>
+<?php if (isset($_GET['login_error'])): ?>
+  <div class="container mt-3">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <?php
+        if ($_GET['login_error'] === 'invalid_email') {
+            echo "<strong>Error:</strong> Por favor ingrese un correo electrónico válido.";
+        } elseif ($_GET['login_error'] === 'missing_fields') {
+            echo "<strong>Error:</strong> Debe ingresar su usuario y contraseña.";
+        } else {
+            echo "<strong>Error de autenticación:</strong> Correo o contraseña incorrectos, o cuenta inactiva.";
+        }
+      ?>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+<?php endif; ?>
+
+<?php if (isset($_GET['reg_error'])): ?>
+  <div class="container mt-3">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <?php
+        if ($_GET['reg_error'] === 'email_exists') {
+            echo "<strong>Error de registro:</strong> El correo electrónico ingresado ya se encuentra registrado.";
+        } elseif ($_GET['reg_error'] === 'invalid_email') {
+            echo "<strong>Error de registro:</strong> El formato del correo electrónico no es válido.";
+        } elseif ($_GET['reg_error'] === 'short_password') {
+            echo "<strong>Error de registro:</strong> La contraseña debe tener al menos 4 caracteres.";
+        } else {
+            echo "<strong>Error de registro:</strong> Todos los campos son obligatorios.";
+        }
+      ?>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+<?php endif; ?>
+
+<?php if (isset($_GET['reg_success'])): ?>
+  <div class="container mt-3">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <strong>¡Registro exitoso!</strong> Su cuenta ha sido creada correctamente. Ya puede iniciar sesión con sus credenciales.
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+<?php endif; ?>
   <section>
     <div class="container contendor">
       <div class="row">
@@ -392,6 +443,40 @@ direcciones.id WHERE restautantes.id = ".$key." AND restautantes.eliminado IS NU
   </div>
 </div>
 
+<!-- Modal de Registro de Usuario -->
+<div class="modal fade" id="modalRegistro" tabindex="-1" role="dialog" aria-labelledby="modalRegistroLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="setup/procesaregistro.php" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalRegistroLabel">Crear Cuenta de Usuario</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="reg_nombre">Nombre Completo</label>
+            <input type="text" class="form-control" id="reg_nombre" name="reg_nombre" placeholder="Ej: Juan Pérez" required minlength="2" maxlength="100">
+          </div>
+          <div class="form-group">
+            <label for="reg_email">Correo Electrónico</label>
+            <input type="email" class="form-control" id="reg_email" name="reg_email" placeholder="ejemplo@correo.cl" required>
+            <small class="form-text text-muted">Debe ser un correo válido y único.</small>
+          </div>
+          <div class="form-group">
+            <label for="reg_password">Contraseña</label>
+            <input type="password" class="form-control" id="reg_password" name="reg_password" placeholder="Mínimo 4 caracteres" required minlength="4">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success">Registrarse</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <?php
 
