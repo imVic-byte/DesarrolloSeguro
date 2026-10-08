@@ -383,17 +383,39 @@ if(isset($key))
           <div class="section-intro">
             <h4 class="intro-title">Comentarios</h4>
              <?php
+            if(isset($_GET['comment_success']))
+            {
+            ?>
+              <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                ¡Comentario publicado exitosamente!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            <?php
+            }
+            if(isset($_GET['comment_error']))
+            {
+            ?>
+              <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                No se pudo publicar el comentario. Verifique que no esté vacío y no exceda 1000 caracteres.
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            <?php
+            }
             if(isset($_SESSION['nombre']))
             {
              ?>
              <form action="grcomentarios.php" method="post">
               <div class="form-group">
-                <label for="usr">Nombre:</label>
-                <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo $_SESSION['nombre'];?>">
+                <label for="usuario">Nombre:</label>
+                <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo htmlspecialchars($_SESSION['nombre'], ENT_QUOTES, 'UTF-8');?>" readonly>
               </div>
               <div class="form-group">
-                <label for="comment">Comentario:</label>
-                <textarea class="form-control" rows="5" id="comentario" name="comentario"></textarea>
+                <label for="comentario">Comentario:</label>
+                <textarea class="form-control" rows="5" id="comentario" name="comentario" placeholder="Escriba su comentario aquí..." required maxlength="1000"></textarea>
               </div>
               <button type="submit" class="btn btn-success fa-align-right">Comentar</button>
            </form>
@@ -404,20 +426,30 @@ if(isset($key))
           <br>
           <?php
 
-            $sqlcomentarios="select * from comentarios where id_restaurante=".$key;
+            $key_comentarios = (int)$key;
+            $sqlcomentarios="select usuario, comentario from comentarios where id_restaurante=".$key_comentarios;
             $resultcomentarios=mysqli_query(conectar(),$sqlcomentarios);
-            while($datoscomentarios=mysqli_fetch_array($resultcomentarios))
+            $total_comentarios = ($resultcomentarios) ? mysqli_num_rows($resultcomentarios) : 0;
+
+            if($total_comentarios == 0)
             {
-          ?>
-          <div class="card bg-light">
-            <div class="card-body">
-              <b><?php echo $datoscomentarios['usuario'];?></b>
-              <br>
-              <?php echo $datoscomentarios['comentario'];?>
+              echo "<p class='text-muted'>Aún no hay comentarios para este restaurante. ¡Sé el primero en comentar!</p>";
+            }
+            else
+            {
+              while($datoscomentarios=mysqli_fetch_array($resultcomentarios))
+              {
+            ?>
+            <div class="card bg-light">
+              <div class="card-body">
+                <b><?php echo htmlspecialchars($datoscomentarios['usuario'], ENT_QUOTES, 'UTF-8');?></b>
+                <br>
+                <?php echo nl2br(htmlspecialchars($datoscomentarios['comentario'], ENT_QUOTES, 'UTF-8'));?>
+              </div>
             </div>
-          </div>
-          <br>
-          <?php
+            <br>
+            <?php
+              }
             }
           ?>
           <hr>
