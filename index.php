@@ -4,8 +4,21 @@ include("setup/setup.php");
 session_start();
 
 mysqli_set_charset(conectar(), 'utf8');
-$key=$_GET['id'];
-$_SESSION['id']=$_GET['id'];
+// Obtención y validación del ID de restaurante (GET -> SESSION -> Fallback)
+$id_restaurante = null;
+
+if (isset($_GET['id']) && filter_var($_GET['id'], FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]])) {
+    $id_restaurante = (int)$_GET['id'];
+    $_SESSION['id'] = $id_restaurante;
+} elseif (isset($_SESSION['id']) && filter_var($_SESSION['id'], FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]])) {
+    $id_restaurante = (int)$_SESSION['id'];
+} else {
+    // Fallback predeterminado seguro al primer restaurante activo
+    $id_restaurante = 1;
+    $_SESSION['id'] = $id_restaurante;
+}
+
+$key = $id_restaurante;
 
 $sql_restorant="SELECT direcciones.calle, direcciones.numero, direcciones.comuna, direcciones.region, restautantes.nombre, restautantes.id, restautantes.fono, restautantes.email, restautantes.foto FROM restautantes INNER JOIN direcciones ON restautantes.direcciones_id =
 direcciones.id WHERE restautantes.id = ".$key." AND restautantes.eliminado IS NULL";
