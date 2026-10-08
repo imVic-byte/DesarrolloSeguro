@@ -23,7 +23,17 @@ $key = $id_restaurante;
 $sql_restorant="SELECT direcciones.calle, direcciones.numero, direcciones.comuna, direcciones.region, restautantes.nombre, restautantes.id, restautantes.fono, restautantes.email, restautantes.foto FROM restautantes INNER JOIN direcciones ON restautantes.direcciones_id =
 direcciones.id WHERE restautantes.id = ".$key." AND restautantes.eliminado IS NULL";
 $result_restorant=mysqli_query(conectar(),$sql_restorant);
-$datos_restorant=mysqli_fetch_array($result_restorant);
+$datos_restorant=($result_restorant && mysqli_num_rows($result_restorant) > 0) ? mysqli_fetch_array($result_restorant) : null;
+
+// Manejo defensivo: si el ID solicitado no existe, retroceder al restaurante predeterminado
+if(!$datos_restorant && $key !== 1) {
+    $key = 1;
+    $_SESSION['id'] = 1;
+    $sql_restorant="SELECT direcciones.calle, direcciones.numero, direcciones.comuna, direcciones.region, restautantes.nombre, restautantes.id, restautantes.fono, restautantes.email, restautantes.foto FROM restautantes INNER JOIN direcciones ON restautantes.direcciones_id =
+direcciones.id WHERE restautantes.id = ".$key." AND restautantes.eliminado IS NULL";
+    $result_restorant=mysqli_query(conectar(),$sql_restorant);
+    $datos_restorant=($result_restorant && mysqli_num_rows($result_restorant) > 0) ? mysqli_fetch_array($result_restorant) : null;
+}
 
 
 
@@ -34,7 +44,7 @@ $datos_restorant=mysqli_fetch_array($result_restorant);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title><?php echo utf8_encode($datos_restorant['nombre']);?></title>
+  <title><?php echo isset($datos_restorant['nombre']) ? utf8_encode($datos_restorant['nombre']) : 'PNK Security';?></title>
 	<!--<link rel="icon" href="img/Fevicon.png" type="image/png">-->
 
   <link rel="stylesheet" href="vendors/bootstrap/bootstrap.min.css">
@@ -99,7 +109,7 @@ $datos_restorant=mysqli_fetch_array($result_restorant);
         <div class="col-lg-4">
           <div class="carro">
             <div class="media float-right">
-              <a class="button_carrito" href="mostrar_carrito.php?keyid=<?php echo $_GET['id'];?>">
+              <a class="button_carrito" href="mostrar_carrito.php?id=<?php echo $key;?>">
               <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-cart4" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l.5 2H5V5H3.14zM6 5v2h2V5H6zm3 0v2h2V5H9zm3 0v2h1.36l.5-2H12zm1.11 3H12v2h.61l.5-2zM11 8H9v2h2V8zM8 8H6v2h2V8zM5 8H3.89l.5 2H5V8zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
               </svg>
