@@ -497,11 +497,11 @@ if(isset($key))
              <form action="grcomentarios.php" method="post">
               <div class="form-group">
                 <label for="usr">Nombre:</label>
-                <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo $_SESSION['nombre'];?>">
+                <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo htmlspecialchars($_SESSION['nombre'], ENT_QUOTES, 'UTF-8');?>" readonly>
               </div>
               <div class="form-group">
                 <label for="comment">Comentario:</label>
-                <textarea class="form-control" rows="5" id="comentario" name="comentario"></textarea>
+                <textarea class="form-control" rows="5" id="comentario" name="comentario" required maxlength="1000"></textarea>
               </div>
               <button type="submit" class="btn btn-success fa-align-right">Comentar</button>
            </form>
@@ -512,16 +512,16 @@ if(isset($key))
           <br>
           <?php
 
-            $sqlcomentarios="select * from comentarios where id_restaurante=".$key;
+            $sqlcomentarios="select * from comentarios where id_restaurante=".(int)$key;
             $resultcomentarios=mysqli_query(conectar(),$sqlcomentarios);
             while($datoscomentarios=mysqli_fetch_array($resultcomentarios))
             {
           ?>
           <div class="card bg-light">
             <div class="card-body">
-              <b><?php echo $datoscomentarios['usuario'];?></b>
+              <b><?php echo htmlspecialchars($datoscomentarios['usuario'], ENT_QUOTES, 'UTF-8');?></b>
               <br>
-              <?php echo $datoscomentarios['comentario'];?>
+              <?php echo htmlspecialchars($datoscomentarios['comentario'], ENT_QUOTES, 'UTF-8');?>
             </div>
           </div>
           <br>
